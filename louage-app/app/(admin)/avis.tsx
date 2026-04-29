@@ -87,6 +87,7 @@ export default function AdminAvisScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.contentWrapper}>
       {loading ? (
         <ActivityIndicator size="large" color="#F59E0B" style={{ marginTop: 40 }} />
       ) : (
@@ -98,6 +99,7 @@ export default function AdminAvisScreen() {
           ListEmptyComponent={<Text style={styles.emptyText}>Aucun avis trouvé.</Text>}
         />
       )}
+      </View>
     </View>
   );
 }
@@ -106,6 +108,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0F172A',
+  },
+  contentWrapper: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
   },
   listContent: {
     padding: 16,

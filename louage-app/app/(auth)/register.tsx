@@ -68,7 +68,11 @@ export default function RegisterScreen() {
     if (!prenom.trim()) newErrors.prenom = 'Le prénom est obligatoire';
     if (!telephone.trim()) newErrors.telephone = 'Le téléphone est obligatoire';
     if (!/^[0-9]{8}$/.test(telephone)) newErrors.telephone = '8 chiffres requis';
-    if (!email.trim()) newErrors.email = 'L\'email est obligatoire';
+    if (!email.trim()) {
+      newErrors.email = 'L\'email est obligatoire';
+    } else if (!email.includes('@')) {
+      newErrors.email = 'L\'email doit contenir un @';
+    }
     if (!password.trim()) newErrors.password = 'Le mot de passe est obligatoire';
     if (role === 'chauffeur' && !carteGriseUri) newErrors.carteGrise = 'Photo de carte grise obligatoire';
 
@@ -81,9 +85,8 @@ export default function RegisterScreen() {
     try {
       setLoading(true);
       const normalizedEmail = email.trim().toLowerCase();
-      const fullEmail = normalizedEmail.includes('@gmail.com') ? normalizedEmail : normalizedEmail + '@gmail.com';
-      console.log(`[DEBUG] Formulaire d'inscription - Email envoyé: '${fullEmail}'`);
-      const response = await register({ nom, prenom, telephone, email: fullEmail, password, role, carteGriseUri });
+      console.log(`[DEBUG] Formulaire d'inscription - Email envoyé: '${normalizedEmail}'`);
+      const response = await register({ nom, prenom, telephone, email: normalizedEmail, password, role, carteGriseUri });
       
       setSuccessMessage('✅ Ton compte est créé avec succès !');
       
@@ -131,9 +134,9 @@ export default function RegisterScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.hero}>
-        <Text style={styles.eyebrow}>Bienvenue</Text>
-        <Text style={styles.title}>Creez votre espace en quelques secondes</Text>
-        <Text style={styles.subtitle}>Choisissez votre role et rejoignez une application plus vivante et plus claire.</Text>
+        <Text style={styles.eyebrow}>LOUAGE.TN</Text>
+        <Text style={styles.title}>Rejoignez-nous aujourd'hui</Text>
+        <Text style={styles.subtitle}>Creez votre compte pour commencer a voyager ou a conduire en toute simplicite.</Text>
       </View>
 
       <View style={styles.form}>
@@ -181,19 +184,16 @@ export default function RegisterScreen() {
         />
         {errors.telephone && <Text style={styles.errorMessage}>{errors.telephone}</Text>}
 
-        <Text style={styles.label}>Email (Gmail)</Text>
-        <View style={[styles.emailContainer, errors.email && styles.inputError]}>
-          <TextInput
-            style={styles.emailInput}
-            placeholder="votre gmail"
-            placeholderTextColor="#94A3B8"
-            value={email}
-            onChangeText={(text) => { setEmail(text); if (errors.email) setErrors({ ...errors, email: '' }); }}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <Text style={styles.gmailDomain}>@gmail.com</Text>
-        </View>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={[styles.input, errors.email && styles.inputError]}
+          placeholder="votre email"
+          placeholderTextColor="#94A3B8"
+          value={email}
+          onChangeText={(text) => { setEmail(text); if (errors.email) setErrors({ ...errors, email: '' }); }}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
         {errors.email && <Text style={styles.errorMessage}>{errors.email}</Text>}
 
         <Text style={styles.label}>Mot de passe</Text>
@@ -264,13 +264,15 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: '#EEF4FF',
-    padding: 20,
+    padding: 0,
   },
   hero: {
     backgroundColor: '#1E3A8A',
-    borderRadius: 28,
-    padding: 22,
-    marginBottom: 16,
+    borderRadius: 0,
+    paddingHorizontal: 22,
+    paddingTop: 40,
+    paddingBottom: 30,
+    marginBottom: 0,
   },
   eyebrow: {
     color: '#BFDBFE',
@@ -295,6 +297,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 20,
+    margin: 20,
+    marginTop: -20,
   },
   label: {
     fontSize: 14,

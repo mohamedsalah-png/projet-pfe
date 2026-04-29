@@ -11,8 +11,9 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="light" />
       <View style={styles.container}>
-        <View style={styles.hero}>
-          <View style={styles.badge}>
+        <View style={styles.contentWrapper}>
+          <View style={styles.hero}>
+            <View style={styles.badge}>
             <Ionicons name="car-sport" size={18} color="#fff" />
             <Text style={styles.badgeText}>Louage.tn</Text>
           </View>
@@ -62,6 +63,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
+        </View>
         <View style={styles.topGlow} />
         <View style={styles.bottomGlow} />
       </View>
@@ -77,9 +79,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0F172A',
+  },
+  contentWrapper: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     paddingHorizontal: 24,
     paddingVertical: 28,
     justifyContent: 'space-between',
+    zIndex: 1,
   },
   hero: {
     marginTop: 24,

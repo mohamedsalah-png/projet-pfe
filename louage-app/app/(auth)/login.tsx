@@ -18,6 +18,14 @@ import { useRouter } from 'expo-router';
 // ✅ FIX IMPORTANT
 import * as Api from '../../services/api';
 
+const showAlert = (title: string, message: string) => {
+  if (Platform.OS === 'web') {
+    window.alert(`${title}\n${message}`);
+  } else {
+    Alert.alert(title, message);
+  }
+};
+
 export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -26,7 +34,11 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
+      showAlert('Erreur', 'Veuillez remplir tous les champs.');
+      return;
+    }
+    if (!email.includes('@')) {
+      showAlert('Erreur', 'L\'email doit contenir un @.');
       return;
     }
 
@@ -34,14 +46,11 @@ export default function LoginScreen() {
       setLoading(true);
 
       const normalizedEmail = email.trim().toLowerCase();
-      const fullEmail = normalizedEmail.includes('@gmail.com')
-        ? normalizedEmail
-        : normalizedEmail + '@gmail.com';
 
-      console.log(`[DEBUG] Formulaire de connexion - Email envoyé: '${fullEmail}'`);
+      console.log(`[DEBUG] Formulaire de connexion - Email envoyé: '${normalizedEmail}'`);
 
       const response = await Api.login({
-        email: fullEmail,
+        email: normalizedEmail,
         password,
       });
 
@@ -55,12 +64,14 @@ export default function LoginScreen() {
       } else {
         router.replace('/(driver)/home');
       }
-    } catch (error) {
-      Alert.alert(
+    } catch (error: any) {
+      console.error('[DEBUG] Login error:', error);
+      showAlert(
         'Connexion impossible',
         Api.getApiErrorMessage(error, 'Email ou mot de passe incorrect.')
       );
     } finally {
+      console.log('[DEBUG] Setting loading to false');
       setLoading(false);
     }
   };
@@ -80,7 +91,7 @@ export default function LoginScreen() {
               <Ionicons name="arrow-back" size={18} color="#FFFFFF" />
             </TouchableOpacity>
 
-            <Text style={styles.eyebrow}>Louage.tn</Text>
+            <Text style={styles.eyebrow}>LOUAGE.TN</Text>
             <Text style={styles.title}>
               Entrez dans une experience plus fluide
             </Text>
@@ -93,19 +104,16 @@ export default function LoginScreen() {
             <Text style={styles.cardTitle}>Connexion</Text>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email (Gmail)</Text>
-              <View style={styles.emailContainer}>
-                <TextInput
-                  style={styles.emailInput}
-                  placeholder="votre gmail"
-                  placeholderTextColor="#94A3B8"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-                <Text style={styles.gmailDomain}>@gmail.com</Text>
-              </View>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="votre email"
+                placeholderTextColor="#94A3B8"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
             </View>
 
             <View style={styles.inputGroup}>
@@ -155,12 +163,14 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFF8F1' },
   keyboardView: { flex: 1 },
-  container: { flex: 1, padding: 20, justifyContent: 'center' },
+  container: { flex: 1, padding: 0, justifyContent: 'flex-start' },
   hero: {
     backgroundColor: '#0F172A',
-    borderRadius: 28,
-    padding: 22,
-    marginBottom: 18,
+    borderRadius: 0,
+    paddingHorizontal: 22,
+    paddingTop: 40,
+    paddingBottom: 30,
+    marginBottom: 0,
   },
   backButton: {
     width: 42,
@@ -194,6 +204,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 20,
+    margin: 20,
+    marginTop: -20,
     shadowColor: '#0F172A',
     shadowOpacity: 0.08,
     shadowRadius: 16,

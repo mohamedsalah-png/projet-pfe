@@ -157,13 +157,14 @@ export default function DriverHome() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.hero}>
-        <Text style={styles.eyebrow}>Espace chauffeur</Text>
-        <Text style={styles.title}>Gerez vos demandes et vos places en direct</Text>
-        <Text style={styles.subtitle}>
-          Chaque passager vous appelle d abord. Ensuite vous confirmez ou refusez selon votre decision.
-        </Text>
-      </View>
+      <View style={styles.contentWrapper}>
+        <View style={styles.hero}>
+          <Text style={styles.eyebrow}>LOUAGE.TN</Text>
+          <Text style={styles.title}>Gerez vos trajets en direct</Text>
+          <Text style={styles.subtitle}>
+            Visualisez vos demandes de reservation et mettez a jour vos places disponibles.
+          </Text>
+        </View>
 
       <TouchableOpacity style={styles.addButton} onPress={() => router.push('/(driver)/addTrip')}>
         <Text style={styles.addButtonText}>Publier un nouveau trajet</Text>
@@ -208,10 +209,10 @@ export default function DriverHome() {
                   </View>
                   <TouchableOpacity
                     style={[styles.manualAddButton, item.places <= 0 && styles.manualAddButtonDisabled]}
-                    onPress={() => handleManualAdd(item._id, item.places)}
+                    onPress={() => router.push('/(auth)/register')}
                     disabled={item.places <= 0}
                   >
-                    <Text style={styles.manualAddButtonText}>+ Passager manuel (sans app)</Text>
+                    <Text style={styles.manualAddButtonText}>+ Créer un compte passager</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -239,6 +240,7 @@ export default function DriverHome() {
           contentContainerStyle={styles.listContent}
         />
       )}
+      </View>
     </View>
   );
 }
@@ -247,6 +249,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EEF4FF',
+  },
+  contentWrapper: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
     paddingHorizontal: 16,
     paddingTop: 16,
   },

@@ -4,27 +4,10 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
 const getApiUrl = (): string => {
-  // 1. Essayer de récupérer l'IP depuis Expo hostUri (développement avec Expo Go)
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) {
-    const ip = hostUri.split(':')[0];
-    // Si on est sur un émulateur Android, hostUri peut être 'localhost' ou '127.0.0.1'
-    if (ip === 'localhost' || ip === '127.0.0.1') {
-      return 'http://10.0.2.2:5000/api';
-    }
-    return `http://${ip}:5000/api`;
+  if (Platform.OS === 'web') {
+    return 'http://localhost:5000/api';
   }
-
-  // 2. Fallback pour développement (quand hostUri n'est pas disponible)
-  // Utilise l'adresse IP de votre machine (192.168.0.140)
-  // Sauf sur émulateur Android où 10.0.2.2 est requis
-  if (Platform.OS === 'android') {
-    // Si vous testez sur un émulatateur Android, utilisez 10.0.2.2
-    // Si vous testez sur un téléphone physique, utilisez 192.168.0.140
-    // Par défaut, on met l'IP physique car c'est ce que vous avez confirmé
-    return 'http://192.168.0.140:5000/api';
-  }
-
+  // FORCE HARDCODED IP
   return 'http://192.168.0.140:5000/api';
 };
 
@@ -33,6 +16,7 @@ console.log('[API] URL du serveur:', API_URL);
 
 export const api = axios.create({
   baseURL: API_URL,
+  timeout: 5000, // 5 secondes de timeout pour éviter le chargement infini
 });
 
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
@@ -52,6 +36,12 @@ api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
 });
 
 export const getApiErrorMessage = (error: any, defaultMessage = 'Une erreur est survenue.'): string => {
+  if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+    return "Le serveur met trop de temps à répondre (Timeout). Vérifiez votre connexion et l'adresse IP.";
+  }
+  if (error.message === 'Network Error') {
+    return "Impossible de joindre le serveur. Le pare-feu bloque peut-être la connexion.";
+  }
   if (error.response?.data?.message) {
     return error.response.data.message;
   }

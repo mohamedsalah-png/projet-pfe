@@ -166,7 +166,8 @@ export default function AdminTrajetsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchContainer}>
+      <View style={styles.contentWrapper}>
+        <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
           placeholder="🔍 Rechercher par ville ou chauffeur..."
@@ -188,6 +189,7 @@ export default function AdminTrajetsScreen() {
           ListEmptyComponent={<Text style={styles.emptyText}>Aucun trajet trouvé.</Text>}
         />
       )}
+      </View>
     </View>
   );
 }
@@ -196,6 +198,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0F172A',
+  },
+  contentWrapper: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
   },
   searchContainer: {
     padding: 16,
